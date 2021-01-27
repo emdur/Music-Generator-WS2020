@@ -29,7 +29,7 @@ If you feel like anything does not work, you can always choose one critic, press
 
 To change the number of how many generations the next evolution process will last, type a new number in the textfield and press "Play".
 If you want to stop, you can hit "Pause", and after that (without changing the number in the textfield) "Play" to resume with the current population or (optional: type new number in textfield) "Reset" and then "Play" to restart with a fresh population.
-
+If the number of generations that the population was initiated with has been reached, the music will stop. If you press "Play" now, a fresh population will be generated (the old one won't resume).
 
 ***
 
