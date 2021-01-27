@@ -48,3 +48,14 @@ Children‘s Melody: High fitness for a pattern if: Notes in octave 4 and 5; the
 The "Reverse"-Critics give high fitness by the opposite criteria to the ones they are named after.
 
 Tipp: Try it for good effect with "ClosenessOfNotes" as the only critic, let the fitness reach 100 or close to 100 and then click "ReverseClosenessOfNotes".
+
+***
+
+Quick Guide to the Java Code / Classes:
+
+Test.java --> Entrance class for the .jar file, creates an instance of the Graphical User Interface
+GUI.java --> This is where the User Interface is defined, as is the RealtimePlayer and the "Solution" that the User interacts with
+Solution.java --> This class has an instance of "Population" in it, so it has the actual population that evolves and a function called "evaluateOnce" that tells the population to evolve and makes sure the returned pattern is played correctly.
+Population.java --> This class has a list of "Individuals" and some functions needed for what may be the most important function: "evolve".
+Individual.java --> Has a list of notes and some additional properties like the "fitness" and functions like the function that calculates its fitness with a list of critics as a parameter.
+Interface Critic.java --> Has a "mutate" and a "calculateFitness" function. What the classes that implement this interface do is explained in the paragraph above.
