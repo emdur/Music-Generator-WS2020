@@ -5,12 +5,12 @@ import java.util.Random;
 
 import org.jfugue.theory.Note;
 
-public class ReverseChildrensMelody implements Fitness {
+public class ReverseChildrensMelody implements Critic {
 
 	@Override
 	public double getCalculatedFitness(Individual individual) {
 		//this is the exact reverse to the ChildrensMelody Class (fitness = 100-ChildrensMelodyFitness)
-		//+fitness for notes NOT in the octaves 4 or 5
+		// + fitness for notes NOT in the octaves 4 or 5
 		// a note must be further apart from the one after it more than 4 half tone steps
 		
 		double fitness = 0;

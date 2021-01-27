@@ -5,7 +5,7 @@ import java.util.Random;
 
 import org.jfugue.theory.Note;
 
-public class ClosenessOfNotes implements Fitness {
+public class ClosenessOfNotes implements Critic {
 	//Criteria: Notes should be close together
 
 	@Override

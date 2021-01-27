@@ -5,12 +5,11 @@ import java.util.Random;
 
 import org.jfugue.theory.Note;
 
-public class DurationCritic implements Fitness {
+public class DurationCritic implements Critic {
 
 	@Override
 	public double getCalculatedFitness(Individual individual) {
 		//calculate the fitness of an Individual based on the duration of the notes.
-		//criteria: fitness is higher if ...
 		double fitness = 0;
 		double partFit = 100/(double)individual.notes.size();
 		for(int i = 0; i < individual.notes.size(); i++) {

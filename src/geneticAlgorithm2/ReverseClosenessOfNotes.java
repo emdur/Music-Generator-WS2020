@@ -5,8 +5,8 @@ import java.util.Random;
 
 import org.jfugue.theory.Note;
 
-public class ReverseClosenessOfNotes implements Fitness {
-	//Criteria: Notes should be further apart
+public class ReverseClosenessOfNotes implements Critic {
+	//Criteria: Notes should be far apart from each other
 
 	@Override
 	public double getCalculatedFitness(Individual individual) {

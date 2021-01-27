@@ -2,7 +2,7 @@ package geneticAlgorithm2;
 
 import java.util.ArrayList;
 
-public interface Fitness {
+public interface Critic {
 
 	double getCalculatedFitness(Individual individual);
 

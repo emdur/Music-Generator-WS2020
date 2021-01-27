@@ -5,11 +5,11 @@ import java.util.Random;
 
 import org.jfugue.theory.Note;
 
-public class ChildrensMelody implements Fitness {
+public class ChildrensMelody implements Critic {
 
 	@Override
 	public double getCalculatedFitness(Individual individual) {
-		//+fitness for notes in the octaves 4 or 5
+		// + fitness for notes in the octaves 4 or 5
 		// a note can't be the same value as the one after it
 		// a note can't be further apart from the one after it more than 4 half tone steps
 		double fitness = 0;

@@ -5,7 +5,7 @@ import java.util.Random;
 
 import org.jfugue.theory.Note;
 
-public class CFriend implements Fitness {
+public class CFriend implements Critic {
 	//Criteria: Notes should be "C"s (Octave does not matter)
 	
 	@Override
@@ -39,7 +39,6 @@ public class CFriend implements Fitness {
 		}
 		Random ran = new Random();
 		for(int i = 0; i < individuals.size(); i++) {
-			// more patterns --> higher probability of a pattern with a higher fitness --> 100% will be reached faster
 			int size = individuals.get(i).notes.size();
 			noteToChange = ran.nextInt(size);
 			int val = ran.nextInt(100);

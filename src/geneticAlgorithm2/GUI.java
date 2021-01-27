@@ -1,15 +1,14 @@
 package geneticAlgorithm2;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -18,27 +17,63 @@ import java.util.concurrent.TimeUnit;
 import javax.sound.midi.MidiUnavailableException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.jfugue.realtime.RealtimePlayer;
 import org.jfugue.temporal.TemporalPLP;
-import org.jfugue.theory.Note;
 
 
 public class GUI {
 
-
 	private Solution sol;
+	public Solution getSol() {
+		return sol;
+	}
+
+	public void setSol(Solution sol) {
+		this.sol = sol;
+	}
 	private RealtimePlayer player;
+	public RealtimePlayer getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(RealtimePlayer player) {
+		this.player = player;
+	}
 	private int generationNumber; //number of generations that can/will be generated
-	private ArrayList<Fitness> fl = new ArrayList<Fitness>();
+	public int getGenerationNumber() {
+		return generationNumber;
+	}
+
+	public void setGenerationNumber(int generationNumber) {
+		this.generationNumber = generationNumber;
+	}
+	private ArrayList<Critic> cl = new ArrayList<Critic>();
 	
-	private int genIndex = 1; //index of current generation in evolution
-	private int bpm = 120; //bpm calculation only works with 60/120/240/480..
+	private Integer genIndex = 1; //index of current generation in evolution
+	public Integer getGenIndex() {
+		return genIndex;
+	}
+
+	public void setGenIndex(Integer genIndex) {
+		this.genIndex = genIndex;
+		Integer print = genIndex-1;
+		this.genIndexLabel.setText(print.toString());
+		if(genIndex.equals(0)) {
+			fitnessLabel.setText("");
+			patternLabel.setText("");
+		}
+	}
+	private int bpm = 120;
 	private Boolean addBestFromLastRound = false;
 	TemporalPLP plp;
+	JLabel fitnessLabel;
+	JLabel patternLabel;
+	JLabel genIndexLabel;
+	static final Color background = new Color(37, 42, 54);
 	public GUI() {
 		initializeGui();
 	}
@@ -49,10 +84,11 @@ public class GUI {
 		GridBagConstraints c = new GridBagConstraints();
 
 		pane.setLayout(new GridBagLayout());
-		frame.setTitle("Music Generator");
+		pane.setBackground(background);
+		frame.setTitle("Muvolution");
 		frame.add(pane);
-		frame.setSize(1000, 200);
-		//frame.setResizable(false);
+		frame.setSize(1000, 260);
+		frame.setResizable(false);
 		
 		// define components of GUI w/ action listeners
 
@@ -67,13 +103,13 @@ public class GUI {
 		            	 if(btnReverseChildrensMelody.isSelected()) {
 		            		 btnReverseChildrensMelody.doClick();
 		            	 }
-		            	 if(!fl.stream().anyMatch(c -> c instanceof ChildrensMelody)) {
-		            		 fl.add(new ChildrensMelody());
+		            	 if(!cl.stream().anyMatch(c -> c instanceof ChildrensMelody)) {
+		            		 cl.add(new ChildrensMelody());
 		            	 }
 		             } else {
-		            	 for(int i = 0; i < fl.size(); i++) {
-		     				if(fl.get(i) instanceof ChildrensMelody) {
-		     					fl.remove(i);
+		            	 for(int i = 0; i < cl.size(); i++) {
+		     				if(cl.get(i) instanceof ChildrensMelody) {
+		     					cl.remove(i);
 		     				}
 		     			}
 		             }
@@ -86,13 +122,13 @@ public class GUI {
 		            	 if(btnChildrensMelody.isSelected()) {
 		            		 btnChildrensMelody.doClick();
 		            	 }
-		            	 if(!fl.stream().anyMatch(c -> c instanceof ReverseChildrensMelody)) {
-		            		 fl.add(new ReverseChildrensMelody());
+		            	 if(!cl.stream().anyMatch(c -> c instanceof ReverseChildrensMelody)) {
+		            		 cl.add(new ReverseChildrensMelody());
 		            	 }
 		             } else {
-		            	 for(int i = 0; i < fl.size(); i++) {
-		     				if(fl.get(i) instanceof ReverseChildrensMelody) {
-		     					fl.remove(i);
+		            	 for(int i = 0; i < cl.size(); i++) {
+		     				if(cl.get(i) instanceof ReverseChildrensMelody) {
+		     					cl.remove(i);
 		     				}
 		     			}
 		             }
@@ -107,14 +143,13 @@ public class GUI {
 		            	 if(btnReverseCON.isSelected()) {
 			            	 btnReverseCON.doClick();
 		            	 }
-		            	 if(!fl.stream().anyMatch(c -> c instanceof ClosenessOfNotes)) {
-		            		 fl.add(new ClosenessOfNotes());
-		            		 //JOptionPane.showMessageDialog(frame, "Evaluate by Closeness of Notes.");
+		            	 if(!cl.stream().anyMatch(c -> c instanceof ClosenessOfNotes)) {
+		            		 cl.add(new ClosenessOfNotes());
 		            	 }
 		             } else {
-		            	 for(int i = 0; i < fl.size(); i++) {
-		     				if(fl.get(i) instanceof ClosenessOfNotes) {
-		     					fl.remove(i);
+		            	 for(int i = 0; i < cl.size(); i++) {
+		     				if(cl.get(i) instanceof ClosenessOfNotes) {
+		     					cl.remove(i);
 		     				}
 		     			}
 		             }
@@ -126,57 +161,59 @@ public class GUI {
 		            	 if(btnCON.isSelected()) {
 		            		 btnCON.doClick(); 
 		            	 }
-		            	 if(!fl.stream().anyMatch(c -> c instanceof ReverseClosenessOfNotes)) {
-		            		 fl.add(new ReverseClosenessOfNotes());
-		            		 //JOptionPane.showMessageDialog(frame, "Evaluate by increased distance of Notes.");
+		            	 if(!cl.stream().anyMatch(c -> c instanceof ReverseClosenessOfNotes)) {
+		            		 cl.add(new ReverseClosenessOfNotes());
 		            	 }
 		             } else {
-		            	 for(int i = 0; i < fl.size(); i++) {
-		     				if(fl.get(i) instanceof ReverseClosenessOfNotes) {
-		     					fl.remove(i);
+		            	 for(int i = 0; i < cl.size(); i++) {
+		     				if(cl.get(i) instanceof ReverseClosenessOfNotes) {
+		     					cl.remove(i);
 		     				}
 		     			}
 		             }
 		        }  
 		    });
-		JToggleButton btnSub = new JToggleButton("Substitute by Step");
-		btnSub.addActionListener(new ActionListener(){  
-		    public void actionPerformed(ActionEvent e){  
-		             if(((JToggleButton)e.getSource()).isSelected()) {
-		            	 if(!fl.stream().anyMatch(c -> c instanceof SubstituteByStep)) {
-		            		 fl.add(new SubstituteByStep());
-		            		 JOptionPane.showMessageDialog(frame, "Substitute by step.\n Make sure this is the only enabled button.");
-		            	 }
-		             } else {
-		            	 for(int i = 0; i < fl.size(); i++) {
-		     				if(fl.get(i) instanceof SubstituteByStep) {
-		     					fl.remove(i);
-		     				}
-		     			}
-		             }
-		        }  
-		    });
-		JToggleButton btnFindMelody = new JToggleButton("Find specific melody");
-		btnFindMelody.addActionListener(new ActionListener(){  
-		    @SuppressWarnings("unchecked")
-			public void actionPerformed(ActionEvent e){  
-		             if(((JToggleButton)e.getSource()).isSelected()) {
-		            	 if(!fl.stream().anyMatch(c -> c instanceof FindMelody)) {
-		            		 Individual mel = new Individual();
-		            		 ArrayList<Note> no = new ArrayList<Note>(Arrays.asList(new Note[] {new Note(48), new Note("R"), new Note("R"), new Note(55),new Note("R"), new Note("R"), new Note(53), new Note(52)}));
-		            		 mel.notes = (ArrayList<Note>) no.clone();
-		            		 fl.add(new FindMelody(mel));
-		            		 JOptionPane.showMessageDialog(frame, "This evolves towards a specified melody by calculating the fitness values accordingly.\n Make sure this is the only enabled button.");
-		            	 }
-		             } else {
-		            	 for(int i = 0; i < fl.size(); i++) {
-		     				if(fl.get(i) instanceof FindMelody) {
-		     					fl.remove(i);
-		     				}
-		     			}
-		             }
-		        }  
-		    });
+		//These two buttons and the critics that belong to them are not included in the application
+		//because they work differently from the rest. Substitute By Step does not use evolution.
+		
+//		JToggleButton btnSub = new JToggleButton("Substitute by Step");
+//		btnSub.addActionListener(new ActionListener(){  
+//		    public void actionPerformed(ActionEvent e){  
+//		             if(((JToggleButton)e.getSource()).isSelected()) {
+//		            	 if(!cl.stream().anyMatch(c -> c instanceof SubstituteByStep)) {
+//		            		 cl.add(new SubstituteByStep());
+//		            		 JOptionPane.showMessageDialog(frame, "Substitute by step.\n Make sure this is the only enabled button.");
+//		            	 }
+//		             } else {
+//		            	 for(int i = 0; i < cl.size(); i++) {
+//		     				if(cl.get(i) instanceof SubstituteByStep) {
+//		     					cl.remove(i);
+//		     				}
+//		     			}
+//		             }
+//		        }  
+//		    });
+//		JToggleButton btnFindMelody = new JToggleButton("Find specific melody");
+//		btnFindMelody.addActionListener(new ActionListener(){  
+//		    @SuppressWarnings("unchecked")
+//			public void actionPerformed(ActionEvent e){  
+//		             if(((JToggleButton)e.getSource()).isSelected()) {
+//		            	 if(!cl.stream().anyMatch(c -> c instanceof FindMelody)) {
+//		            		 Individual mel = new Individual();
+//		            		 ArrayList<Note> no = new ArrayList<Note>(Arrays.asList(new Note[] {new Note(48), new Note("R"), new Note("R"), new Note(55),new Note("R"), new Note("R"), new Note(53), new Note(52)}));
+//		            		 mel.notes = (ArrayList<Note>) no.clone();
+//		            		 cl.add(new FindMelody(mel));
+//		            		 JOptionPane.showMessageDialog(frame, "This evolves towards a specified melody by calculating the fitness values accordingly.\n Make sure this is the only enabled button.");
+//		            	 }
+//		             } else {
+//		            	 for(int i = 0; i < cl.size(); i++) {
+//		     				if(cl.get(i) instanceof FindMelody) {
+//		     					cl.remove(i);
+//		     				}
+//		     			}
+//		             }
+//		        }  
+//		    });
 		JToggleButton btnCFriend = new JToggleButton("C-Friend");
 		JToggleButton btnReverseCFriend = new JToggleButton("Reverse-C-Friend");
 		btnCFriend.addActionListener(new ActionListener(){  
@@ -185,14 +222,13 @@ public class GUI {
 		            	 if(btnReverseCFriend.isSelected()) {
 			            	 btnReverseCFriend.doClick();
 		            	 }
-		            	 if(!fl.stream().anyMatch(c -> c instanceof CFriend)) {
-		            		 fl.add(new CFriend());
-		            		 //JOptionPane.showMessageDialog(frame, "Fitness is higher if a note is a C.");
+		            	 if(!cl.stream().anyMatch(c -> c instanceof CFriend)) {
+		            		 cl.add(new CFriend());
 		            	 }
 		             } else {
-		            	 for(int i = 0; i < fl.size(); i++) {
-		     				if(fl.get(i) instanceof CFriend) {
-		     					fl.remove(i);
+		            	 for(int i = 0; i < cl.size(); i++) {
+		     				if(cl.get(i) instanceof CFriend) {
+		     					cl.remove(i);
 		     				}
 		     			}
 		             }
@@ -204,14 +240,13 @@ public class GUI {
 		            	 if(btnCFriend.isSelected()) {
 		            		 btnCFriend.doClick();
 		            	 }
-		            	 if(!fl.stream().anyMatch(c -> c instanceof ReverseCFriend)) {
-		            		 fl.add(new ReverseCFriend());
-		            		 //JOptionPane.showMessageDialog(frame, "Fitness is higher if a note is *not* a C.");
+		            	 if(!cl.stream().anyMatch(c -> c instanceof ReverseCFriend)) {
+		            		 cl.add(new ReverseCFriend());
 		            	 }
 		             } else {
-		            	 for(int i = 0; i < fl.size(); i++) {
-		     				if(fl.get(i) instanceof ReverseCFriend) {
-		     					fl.remove(i);
+		            	 for(int i = 0; i < cl.size(); i++) {
+		     				if(cl.get(i) instanceof ReverseCFriend) {
+		     					cl.remove(i);
 		     				}
 		     			}
 		             }
@@ -225,13 +260,13 @@ public class GUI {
 		            	 if(btnReverseDura.isSelected()) {
 		            		 btnReverseDura.doClick();
 		            	 }
-		            	 if(!fl.stream().anyMatch(c -> c instanceof DurationCritic)) {
-		            		 fl.add(new DurationCritic());
+		            	 if(!cl.stream().anyMatch(c -> c instanceof DurationCritic)) {
+		            		 cl.add(new DurationCritic());
 		            	 }
 		             } else {
-		            	 for(int i = 0; i < fl.size(); i++) {
-		     				if(fl.get(i) instanceof DurationCritic) {
-		     					fl.remove(i);
+		            	 for(int i = 0; i < cl.size(); i++) {
+		     				if(cl.get(i) instanceof DurationCritic) {
+		     					cl.remove(i);
 		     				}
 		     			}
 		             }
@@ -243,13 +278,13 @@ public class GUI {
 		            	 if(btnDura.isSelected()) {
 		            		 btnDura.doClick();
 		            	 }
-		            	 if(!fl.stream().anyMatch(c -> c instanceof ReverseDurationCritic)) {
-		            		 fl.add(new ReverseDurationCritic());
+		            	 if(!cl.stream().anyMatch(c -> c instanceof ReverseDurationCritic)) {
+		            		 cl.add(new ReverseDurationCritic());
 		            	 }
 		             } else {
-		            	 for(int i = 0; i < fl.size(); i++) {
-		     				if(fl.get(i) instanceof ReverseDurationCritic) {
-		     					fl.remove(i);
+		            	 for(int i = 0; i < cl.size(); i++) {
+		     				if(cl.get(i) instanceof ReverseDurationCritic) {
+		     					cl.remove(i);
 		     				}
 		     			}
 		             }
@@ -261,17 +296,14 @@ public class GUI {
 		
 		btnPlayDyn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){
-		    	//fix?: nicht resetten, wenn generationNumberMax abgelaufen ist, sondern nur die generationNumber/Index ändern,
-		    	//sodass es weiterspielt an der Stelle wo es aufgehört hat, wenn man z.B. nach abgelaufenen 10 generations
-		    	// 100 eingibt und dann play drückt (nicht reset) --> sol.setGenLimit(int aus textbox in gui)
-		    	if(fl.isEmpty()) {
+		    	if(cl.isEmpty()) {
 		    		btnReset.doClick();
 		    	} else {
-		    		if(sol == null || genIndex-1 == generationNumber) {
+		    		if(getSol() == null || getGenIndex()-1 == getGenerationNumber()) {
 			    		genIndex = 1;
-			    		generationNumber = Integer.parseInt(genNumber.getText());
+			    		setGenerationNumber(Integer.parseInt(genNumber.getText()));
 			    		restartPlayer();
-			    		sol = new Solution(generationNumber);
+			    		setSol(new Solution(getGenerationNumber()));
 			    		calculateWaitTime();
 			    	}
 	            	eval();
@@ -288,13 +320,11 @@ public class GUI {
 		
 		btnReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				genIndex = 1;
-	    		generationNumber = Integer.parseInt(genNumber.getText());
+				setGenIndex(1);
+	    		setGenerationNumber(Integer.parseInt(genNumber.getText()));
 	    		restartPlayer();
-	    		if(fl.isEmpty()) {
-	    			sol = new Solution(generationNumber);
-	    			calculateWaitTime();
-		    	}
+    			setSol(new Solution(getGenerationNumber()));
+    			calculateWaitTime();
 			}
 		});
 		JToggleButton btnLetBestMoveOn = new JToggleButton("Keep best pattern");
@@ -303,13 +333,39 @@ public class GUI {
 	             addBestFromLastRound = !addBestFromLastRound;
 	        }
 		});
+		
+		JButton btnResetDurations = new JButton("Reset Durations");
+		btnResetDurations.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				getSol().resetDuration();
+			}
+		});
+		
+		Font font = new Font("Lucida Sans", Font.PLAIN, 18);
+		Color foreGround = new Color(105, 225, 255);
 		// add components to GUI
 		c.anchor = GridBagConstraints.WEST;
-		JPanel smallPane = new JPanel();
 		c.insets = new Insets(5,5,5,5);
+		c.gridx = 0;
+		c.gridy = 0;
+		JPanel smallPane2 = new JPanel();
+		smallPane2.setBackground(background);
+		JLabel genInL = new JLabel("Generation: ");
+		genInL.setFont(font);
+		genInL.setForeground(foreGround);
+		smallPane2.add(genInL);
+		genIndexLabel = new JLabel();
+		genIndexLabel.setFont(font);
+		genIndexLabel.setForeground(foreGround);
+		smallPane2.add(genIndexLabel);
+		pane.add(smallPane2, c);
 		c.gridy = 0;
 		c.gridx = 1;
-		pane.add(new Label("Number of Generations: "),c);
+		JLabel numGenLabel = new JLabel("Number of Generations: ");
+		numGenLabel.setForeground(foreGround);
+		pane.add(numGenLabel,c);
+		JPanel smallPane = new JPanel();
+		smallPane.setBackground(background);
 		smallPane.add(genNumber,c);
 		btnPlayDyn.setBackground(Color.white);
 		smallPane.add(btnPlayDyn,c);
@@ -344,13 +400,36 @@ public class GUI {
 		c.gridy = 2;
 		c.gridx = 2;
 		pane.add(btnReverseDura,c);
+		c.gridy = 3;
+		c.gridx = 2;
+		pane.add(btnResetDurations,c);
+		btnResetDurations.setBackground(Color.white);
 		c.gridy = 1;
 		c.gridx = 3;
 		pane.add(btnChildrensMelody,c);
 		c.gridy = 2;
 		c.gridx = 3;
 		pane.add(btnReverseChildrensMelody,c);
-		//pane.add(btnSub,c);//pane.add(btnFindMelody,c);
+		c.gridx = 0;
+		c.gridy = 4;
+		fitnessLabel = new JLabel("Fitness:       ");
+		fitnessLabel.setFont(font);
+		fitnessLabel.setForeground(foreGround);
+		pane.add(fitnessLabel,c);
+		c.gridy = 4;
+		c.gridx = 1;
+		JLabel lab = new JLabel("Fittest Pattern: ");
+		lab.setFont(font);
+		lab.setForeground(foreGround);
+		pane.add(lab,c);
+		patternLabel = new JLabel();
+		patternLabel.setFont(font);
+		patternLabel.setForeground(foreGround);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridwidth = 4;
+		c.gridy = 4;
+		c.gridx = 2;
+		pane.add(patternLabel, c);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pane.setVisible(true);
 		frame.setVisible(true);
@@ -361,35 +440,38 @@ public class GUI {
 		       scheduler.scheduleAtFixedRate(evolution, 1000, waitTime, TimeUnit.MILLISECONDS);
 		     scheduler.schedule(new Runnable() {
 		       public void run() { evolHandle.cancel(true); }
-		     }, waitTime*(generationNumber-genIndex+1), TimeUnit.MILLISECONDS);    
+		     }, waitTime*(getGenerationNumber()-getGenIndex()+1), TimeUnit.MILLISECONDS);    
 	}
 	private final Runnable evolution = new Runnable() {
 	       public void run() {
-	    	   if(genIndex > generationNumber) {
+	    	   if(getGenIndex() > getGenerationNumber()) {
 	    		   restartPlayer();
 	    		   scheduler.shutdownNow();
 	    	   } else {
-		    	   sol.evaluateOnce(player, genIndex, bpm, fl, addBestFromLastRound);
-		    	   
-		    	   genIndex++;
+		    	   patternLabel.setText(getSol().evaluateOnce(getPlayer(), getGenIndex(), bpm, cl, addBestFromLastRound).toString());
+		    	   fitnessLabel.setText("Fitness: " + getSol().getPopulation().getMaxFitness());
+		    	   setGenIndex(getGenIndex()+1);
 	    	   }
 	    	   
 	       }
 	     };
+	     
+	//each generation is generated & the best ist played after the calculated waittime.
+	//this is important so that the user can change Critics during the process of evolution.
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 	private void calculateWaitTime() {
-		//60sec/BPM*amount of quarter notes(duration=0.25) in 1 pattern (for 8 notes = 2 (bars))
-		waitTime = (long)((float)60/bpm*4)*1000; 
+		//60sec/BPM*amount of quarter notes(duration=0.25) in 1 pattern (8 8th notes = 4 quarter notes)
+		waitTime = (long)((float)60/bpm*4)*1000;
 		System.out.println("waittime: " + waitTime);
 		
 	}
 	private long waitTime = 0;
 	private void restartPlayer() {
-		if(player != null) {
+		if(getPlayer() != null) {
 			player.close();
 		}
 		try {
-			player = new RealtimePlayer();
+			setPlayer(new RealtimePlayer());
 		} catch (MidiUnavailableException e) {
 			e.printStackTrace();
 		}

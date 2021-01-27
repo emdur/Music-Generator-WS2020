@@ -3,7 +3,9 @@ package geneticAlgorithm2;
 import java.util.ArrayList;
 import org.jfugue.theory.Note;
 
-public class SubstituteByStep implements Fitness {
+public class SubstituteByStep implements Critic {
+	//THIS CRITIC IS NOT USED IN THE APPLICATION AT THE MOMENT.
+	//IT DOES NOT USE EVOLUTION, SO SOME STEPS IN population.evolve() MUST BE SKIPPED FOR IT.
 
 	@Override
 	public double getCalculatedFitness(Individual individual) {

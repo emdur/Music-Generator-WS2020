@@ -5,7 +5,9 @@ import java.util.Random;
 
 import org.jfugue.theory.Note;
 
-public class Randomizer implements Fitness {
+public class Randomizer implements Critic {
+	//This is not used in the application at the moment.
+	
 	// non-reliable: fitness doesn't increase with more increments;
 	//it can decrease because the fitness of the parent that stayed
 	//from the previous increment is also randomized in eacht getFitness() call

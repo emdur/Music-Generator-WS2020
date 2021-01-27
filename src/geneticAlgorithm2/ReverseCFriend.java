@@ -5,13 +5,13 @@ import java.util.Random;
 
 import org.jfugue.theory.Note;
 
-public class ReverseCFriend implements Fitness {
+public class ReverseCFriend implements Critic {
 	//Criteria: Notes should not be "C"s (Octave does not matter)
 	
 		@Override
 		public double getCalculatedFitness(Individual individual) {
 			double fitness = 0;
-			//calculate the relative weight of each note related to the patternlength
+			//calculate the maximum fitness of each note related to the patternlength
 			double relativeVal = (100/(double)individual.notes.size());
 			for(Note note : individual.notes) {
 				if(Note.getToneStringWithoutOctave(note.getValue()) == "C" && !note.isRest()) {
@@ -39,7 +39,6 @@ public class ReverseCFriend implements Fitness {
 			}
 			Random ran = new Random();
 			for(int i = 0; i < individuals.size(); i++) {
-				// more patterns --> higher probability of a pattern with a higher fitness --> 100% will be reached faster
 				int size = individuals.get(i).notes.size();
 				noteToChange = ran.nextInt(size);
 				int val = ran.nextInt(100);

@@ -27,6 +27,13 @@ public class Population {
 		setPatternLength(8);
 		this.randomize();
 	}
+	public void resetNoteDurations() {
+		for(int j = 0; j < patterns.size(); j++) {
+			for(int i = 0; i < getPatternLength(); i++) {
+				patterns.get(j).notes.get(i).setDuration(0.125);
+			}
+		}
+	}
 
 	void randomize() {
 		patterns.clear();
@@ -40,14 +47,13 @@ public class Population {
 				pattern.notes.add(no);
 			}
 			System.out.println(pattern.getDuration());
-			//pattern.changeAllNoteDurationsToRan();
 			patterns.add(pattern);
 		}
 	}
 	
 	double[] _saverDurations = new double[8];
 	
-	Pattern evolve(ArrayList<Fitness> fitnessList, Boolean addBestFromLastRound) {
+	Pattern evolve(ArrayList<Critic> criticList, Boolean addBestFromLastRound) {
 		//The process starts with the Selection because the first generation is random;
 		//it is not supposed to be mutated already when the first fittest pattern is chosen.
 		//That is why the Selection comes before the Crossover/Mutation process.
@@ -56,7 +62,7 @@ public class Population {
 		
 		//The extra variable "save" is necessary because the "parent1" is used and changes before
 		//its value needs to be added to the next generation.
-		Individual parent1 = getFittest(fitnessList, patterns);
+		Individual parent1 = getFittest(criticList, patterns);
 		Individual save = new Individual();
 		for(int j = 0; j < parent1.notes.size(); j++) {
 			Note n = new Note();
@@ -66,26 +72,21 @@ public class Population {
 			save.notes.add(n);
 		}
 		
-		for(Note n : parent1.notes) {
-			System.out.print(n.getDuration() + ", ");
-		}
-		System.out.println("\n");
 		System.out.println("Fittest: " + parent1.translateToPattern().toString());
 		System.out.println("Fitness: " + parent1.getFitness());
-		
-
+		setMaxFitness(parent1.getFitness());
 		System.out.println("\n");
 		Pattern parent1pattern = parent1.translateToPattern();
 		//CREATE THE NEXT POPULATION BY CROSSOVER & MUTATION
-		//2. get the 2nd fittest --> fix?: get more of the ones with high fitness for crossover
+		//2. get the 2nd fittest
 		patterns.remove(parent1);
-		Individual parent2 = getFittest(fitnessList, patterns);
+		Individual parent2 = getFittest(criticList, patterns);
 		patterns.add(parent1);
 		
-		if(!(fitnessList.size()==1 && fitnessList.get(0) instanceof FindMelody)) {//or sbs
+		if(!(criticList.size()==1 && criticList.get(0) instanceof FindMelody)) {//or sbs
 			this.crossover(parent1, parent2);
 		}
-		for(Fitness fitn : fitnessList) {
+		for(Critic fitn : criticList) {
 			ArrayList<Individual> temp = (fitn.mutate(parent1, patterns));
 			patterns.clear();
 			patterns.addAll(temp);
@@ -102,14 +103,11 @@ public class Population {
 			patterns.remove(patterns.size()-1);
 			patterns.add(save);
 		}
-//		for(Individual in : patterns) {
-//			System.out.println(in.getDuration());
-//		}
 		for(Individual in : patterns) {
 			System.out.println(in.translateToPattern());
 		}
-		System.out.println(":" + save.translateToPattern());
-		
+		System.out.println("\n");
+
 		return parent1pattern;
 	}
 	private ArrayList<Individual> correctNoteDurations(Individual parent, ArrayList<Individual> pat) {
@@ -127,7 +125,8 @@ public class Population {
 							//It does not work to set the new duration directly in a line like this:
 							//pat.get(i).notes.get(j).setDuration(dura+0.0625)
 							//So a workaround like the following is needed. This comes up at multiple places
-							//throughout the code. Something that is merely accessed by reference can't be changed directly.
+							//throughout the code in different classes.
+							//Something that is merely accessed by reference can't be changed directly.
 							Note note = new Note();
 							note.setValue(pat.get(i).notes.get(j).getValue());
 							note.setDuration(dura+0.0625);
@@ -151,10 +150,7 @@ public class Population {
 		//create a list with offspring of the 2 fittest individuals
 		int size = patterns.size();
 		patterns.clear();
-		//Random ran = new Random();
 		for(int i = 0; i < size; i++) {
-			//int chooser = ran.nextInt(1);
-			//switch case chooser --> create child with method
 			Individual child = randomCrossover(p1, p2);
 			patterns.add(child);
 		}
@@ -173,7 +169,6 @@ public class Population {
 			
 			child.notes.add(no);
 		}
-		//fix: make this a method ("eraseRests")
 		int rests = 0;
 		for(Note n : child.notes) {
 			if(n.isRest()) {
@@ -194,8 +189,7 @@ public class Population {
 	}
 	
 	private Individual best;
-	Individual getFittest(ArrayList<Fitness> fitnessList, ArrayList<Individual> patternsInternal) {
-		setMaxFitness(0);
+	Individual getFittest(ArrayList<Critic> fitnessList, ArrayList<Individual> patternsInternal) {
 		Individual fittest = new Individual();
 		ArrayList<Individual> fittestBunch = new ArrayList<Individual>();
 		//find the fittest one
@@ -203,7 +197,6 @@ public class Population {
 			i.calculateFitness(fitnessList);
 			if(fittest.getFitness() <= i.getFitness()) {
 				fittest = i;
-				setMaxFitness(i.getFitness());
 			}
 		}
 		//put all with the same highest fitness in a list
@@ -212,7 +205,6 @@ public class Population {
 				fittestBunch.add(i);
 			}
 		}
-		//System.out.println(fittestBunch.size());
 		//return a random one of the ones with the same highest fitness
 		Random ran = new Random();
 		best = fittestBunch.get(ran.nextInt(fittestBunch.size()));

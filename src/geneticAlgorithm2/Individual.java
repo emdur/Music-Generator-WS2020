@@ -32,12 +32,12 @@ public class Individual {
 	public Individual() {
 		this.setFitness(0);
 	}
-	public void calculateFitness(ArrayList<Fitness> fitnessList) {
+	public void calculateFitness(ArrayList<Critic> criticList) {
 		double fit = 0;
-		for(Fitness fi : fitnessList) {
+		for(Critic fi : criticList) {
 			fit += fi.getCalculatedFitness(this);
 		}
-		this.setFitness(fit/fitnessList.size());
+		this.setFitness(fit/criticList.size());
 	}
 	public Individual changeAllNoteDurationsToRan() {
 		double[] possibleDurations = new double[] {

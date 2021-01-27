@@ -5,7 +5,8 @@ import java.util.Random;
 
 import org.jfugue.theory.Note;
 
-public class FindMelody implements Fitness {
+public class FindMelody implements Critic {
+	//THIS CRITIC IS NOT USED IN THE APPLICATION AT THE MOMENT.
 	//The fitness value is higher the closer the pattern is to a predefined
 	// melody that is passed to the constructor.
 	private Individual melodyToFind;
@@ -38,7 +39,6 @@ public class FindMelody implements Fitness {
 		}
 		Random ran = new Random();
 		for(int i = 0; i < individuals.size(); i++) {
-			// more patterns --> higher probability of a pattern with a higher fitness --> 100% will be reached faster
 			int size = individuals.get(i).notes.size();
 			noteToChange = ran.nextInt(size);
 			int val = ran.nextInt(100);
