@@ -45,7 +45,7 @@ public class Solution {
 		Pattern pattern = new Pattern();
 		if(generationIndex <= getGenLimit()) {
 			System.out.println("Generation: " + generationIndex);
-			pattern = population.evolve(criticList);
+			pattern.add(population.evolve(criticList));
 			pattern.setInstrument(12);
 			//Instruments: 9:Glockenspiel; 12: Marimba, 96:Rain, 102 Synth "Echoes", 123 Bird Tweet, 127 Gun Shot, 108 Kalimba, 110 Fiddle
 			//116 Taiko Drum, 118 Synth Drum, 124 Telephone Ring
