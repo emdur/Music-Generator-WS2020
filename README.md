@@ -1,7 +1,7 @@
 # Music Generator for Music in Digital Media Module WiSe 2020/21.
 
-Music is generated based on a genetic algorithm
-In this application, 20 patterns per iteration are generated via "crossover" and "mutation", and what you hear from each of these generations is the pattern with the highest "fitness".
+Music is generated based on a genetic algorithm in this application.
+20 patterns per iteration are generated via "crossover" and "mutation", and what you hear from each of these generations is the pattern with the highest "fitness".
 Genetic algorithms are based on natural selection.
 The Java library JFugue was used for this project.
 
