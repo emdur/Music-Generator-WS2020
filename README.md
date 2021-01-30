@@ -18,7 +18,9 @@ The Java library JFugue was used for this project.
 ## Guide to using the application:
 
 ***1. Type into the textfield for how many generations you want to let the population evolve.
+
 2. Enable at least one of the Toggle Buttons, e.g. "CFriend". (Each of them represents a critic. The critics are explained in detail in the next paragraph.)
+
 3. Press "Play".***
 
 While the music is playing and the population is evolving, you can add and remove the critics as you like -
