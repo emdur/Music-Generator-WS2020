@@ -66,10 +66,14 @@ public class Population {
 	
 	double[] _saverDurations = new double[8];
 	
+	
 	Pattern evolve(ArrayList<Critic> criticList) {
 		//The process starts with the Selection because the first generation is random;
 		//it is not supposed to be mutated already when the first fittest pattern is chosen.
+		//The selected Individuals parent1 and parent2 are then used for generating the new population.
 		//That is why the Selection comes before the Crossover/Mutation process.
+		//Because the new population is actually created at the end of the iteration BEFORE,
+		// the effect of the user clicking one of the critics is delayed by one generation.
 		
 		if(!getAddBestFromLastRound()) {
 			//The new population is generated via crossover & mutation at the end of each round.
@@ -95,21 +99,19 @@ public class Population {
 			n.setRest(parent1.notes.get(j).isRest());
 			save.notes.add(n);
 		}
-		
 		System.out.println("Fittest: " + parent1.translateToPattern().toString());
 		System.out.println("Fitness: " + parent1.getFitness());
 		setMaxFitness(parent1.getFitness());
 		System.out.println("\n");
 		Pattern parent1pattern = parent1.translateToPattern();
 		//CREATE THE NEXT POPULATION BY CROSSOVER & MUTATION
-		//2. get the 2nd fittest
+		//get the 2nd fittest
 		patterns.remove(parent1);
 		Individual parent2 = getFittest(criticList, patterns);
 		patterns.add(parent1);
 		
-		if(!(criticList.size()==1 && criticList.get(0) instanceof FindMelody)) {//or sbs
-			this.crossover(parent1, parent2);
-		}
+		this.crossover(parent1, parent2);
+		
 		for(Critic fitn : criticList) {
 			ArrayList<Individual> temp = (fitn.mutate(parent1, patterns));
 			patterns.clear();
