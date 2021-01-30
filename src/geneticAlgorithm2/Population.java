@@ -71,6 +71,17 @@ public class Population {
 		//it is not supposed to be mutated already when the first fittest pattern is chosen.
 		//That is why the Selection comes before the Crossover/Mutation process.
 		
+		if(!getAddBestFromLastRound()) {
+			//The new population is generated via crossover & mutation at the end of each round.
+			// Thus, if addBestFromLastRound is set to false, the effect would take one round to late
+			// if the added ex-parent1 was not removed here. It needs to be replaced so the number
+			// of population members stays the same.
+			patterns.remove(patterns.size()-1);
+			Individual replacer = new Individual();
+			replacer.randomize();
+			patterns.add(replacer);
+		}
+		
 		//Selection
 		
 		//The extra variable "save" is necessary because the "parent1" is used and changes before
@@ -112,7 +123,7 @@ public class Population {
 		//the fittest pattern moves on to the next round so the fitness can't sink
 		// (otherwise the next round only has the patterns that spawned from the fittest & 2nd fittest pattern in Crossover
 		// and then underwent Mutation)
-		if(addBestFromLastRound) {
+		if(getAddBestFromLastRound()) {
 			patterns.remove(patterns.size()-1);
 			patterns.add(save);
 		}
