@@ -32,6 +32,15 @@ public class Individual {
 	public Individual() {
 		this.setFitness(0);
 	}
+	public void randomize() {
+		Random ran = new Random();
+		for(int j = 0; j < 8; j++) {
+			int n = ran.nextInt(128);
+			Note no = new Note(n);
+			no.setDuration(0.125);
+			this.notes.add(no);
+		}
+	}
 	public void calculateFitness(ArrayList<Critic> criticList) {
 		double fit = 0;
 		for(Critic fi : criticList) {
