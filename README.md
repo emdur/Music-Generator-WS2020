@@ -41,8 +41,11 @@ Each critic also has a mutation function: Which critics you choose affects how t
 ### Criteria of the critics:
 
 **ClosenessOfNotes:** How close are the notes in a pattern to each other? --> Notes are close to each other = high fitness
+
 **CFriend:** How many notes in the pattern are a „C“? --> Many notes in a pattern have the value C or close to C = high fitness
+
 **DurationCritic:** Note Duration: e.g. 3 16th notes next to each other
+
 **Children‘s Melody:** High fitness for a pattern if: Notes in octave 4 and 5; the values of 2 notes next to each other are less than 4 half tone steps apart; only notes in the key of C Major
 
 The **"Reverse"**-Critics give high fitness by the opposite criteria to the ones they are named after.
