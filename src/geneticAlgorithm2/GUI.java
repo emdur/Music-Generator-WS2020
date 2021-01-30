@@ -27,7 +27,7 @@ import org.jfugue.temporal.TemporalPLP;
 
 public class GUI {
 
-	private Solution sol;
+	private Solution sol = new Solution(0);
 	public Solution getSol() {
 		return sol;
 	}
@@ -50,6 +50,10 @@ public class GUI {
 
 	public void setGenerationNumber(int generationNumber) {
 		this.generationNumber = generationNumber;
+		if(getSol() != null) {
+			getSol().setGenLimit(generationNumber);
+		}
+		
 	}
 	private ArrayList<Critic> cl = new ArrayList<Critic>();
 	
@@ -75,8 +79,8 @@ public class GUI {
 
 	public void setAddBestFromLastRound(Boolean addBestFromLastRound) {
 		this.addBestFromLastRound = addBestFromLastRound;
-		if(sol != null) {
-			sol.getPopulation().setAddBestFromLastRound(addBestFromLastRound);
+		if(getSol() != null) {
+			getSol().getPopulation().setAddBestFromLastRound(addBestFromLastRound);
 		}
 	}
 	TemporalPLP plp;
@@ -273,7 +277,7 @@ public class GUI {
 			    		genIndex = 1;
 			    		setGenerationNumber(Integer.parseInt(genNumber.getText()));
 			    		restartPlayer();
-			    		setSol(new Solution(getGenerationNumber()));
+			    		getSol().newPopulation();
 			    		calculateWaitTime();
 			    	}
 	            	eval();
@@ -293,7 +297,7 @@ public class GUI {
 				setGenIndex(1);
 	    		setGenerationNumber(Integer.parseInt(genNumber.getText()));
 	    		restartPlayer();
-    			setSol(new Solution(getGenerationNumber()));
+    			getSol().newPopulation();
     			calculateWaitTime();
 			}
 		});

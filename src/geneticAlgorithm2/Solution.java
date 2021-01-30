@@ -17,6 +17,14 @@ public class Solution {
 	//public TrackTable trackTable;
 	
 
+	public int getGenLimit() {
+		return genLimit;
+	}
+
+	public void setGenLimit(int genLimit) {
+		this.genLimit = genLimit;
+	}
+
 	public Population getPopulation() {
 		return this.population;
 	}
@@ -24,15 +32,18 @@ public class Solution {
 	public void setPopulation(Population population) {
 		this.population = population;
 	}
+	public void newPopulation() {
+		setPopulation(new Population());
+	}
 
 	public Solution(int generationLimit) {
-		this.genLimit = generationLimit;
+		this.setGenLimit(generationLimit);
 		//this.trackTable = new TrackTable(generationLimit, 1.0d);
 		setPopulation(new Population());
 	}
 	public Pattern evaluateOnce(RealtimePlayer player, int generationIndex, int bpm, ArrayList<Critic> criticList) {
-		Pattern pattern = null;
-		if(generationIndex <= genLimit) {
+		Pattern pattern = new Pattern();
+		if(generationIndex <= getGenLimit()) {
 			System.out.println("Generation: " + generationIndex);
 			pattern = population.evolve(criticList);
 			pattern.setInstrument(12);
