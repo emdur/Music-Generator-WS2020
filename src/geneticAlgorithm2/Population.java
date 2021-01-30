@@ -10,14 +10,27 @@ public class Population {
 	 * Population = List of the Lists that hold the numbers that will make up a pattern = List of Patterns
 	 */
 	public ArrayList<Individual> patterns = new ArrayList<Individual>();
-	private double maxFitness;
+	
 	private int patternLength;
+	public int getPatternLength() {
+		return patternLength;
+	}
+	public void setPatternLength(int patternLength) {
+		this.patternLength = patternLength;
+	}
+	private double maxFitness;
 	public double getMaxFitness() {
 		return this.maxFitness;
 	}
-
 	public void setMaxFitness(double maxFitness) {
 		this.maxFitness = maxFitness;
+	}
+	private Boolean addBestFromLastRound = true;
+	public Boolean getAddBestFromLastRound() {
+		return addBestFromLastRound;
+	}
+	public void setAddBestFromLastRound(Boolean addBestFromLastRound) {
+		this.addBestFromLastRound = addBestFromLastRound;
 	}
 	public Population(int patternlength) {
 		setPatternLength(patternlength);
@@ -53,7 +66,7 @@ public class Population {
 	
 	double[] _saverDurations = new double[8];
 	
-	Pattern evolve(ArrayList<Critic> criticList, Boolean addBestFromLastRound) {
+	Pattern evolve(ArrayList<Critic> criticList) {
 		//The process starts with the Selection because the first generation is random;
 		//it is not supposed to be mutated already when the first fittest pattern is chosen.
 		//That is why the Selection comes before the Crossover/Mutation process.
@@ -227,14 +240,6 @@ public class Population {
 	public void setBest(Individual bestOne) {
 		this.best = new Individual();
 		this.best.notes = (ArrayList<Note>) bestOne.notes.clone();
-	}
-
-	public int getPatternLength() {
-		return patternLength;
-	}
-
-	public void setPatternLength(int patternLength) {
-		this.patternLength = patternLength;
 	}
 
 }

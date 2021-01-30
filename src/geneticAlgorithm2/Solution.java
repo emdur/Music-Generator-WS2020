@@ -30,11 +30,11 @@ public class Solution {
 		//this.trackTable = new TrackTable(generationLimit, 1.0d);
 		setPopulation(new Population());
 	}
-	public Pattern evaluateOnce(RealtimePlayer player, int generationIndex, int bpm, ArrayList<Critic> criticList, Boolean addBestFromLastRound) {
+	public Pattern evaluateOnce(RealtimePlayer player, int generationIndex, int bpm, ArrayList<Critic> criticList) {
 		Pattern pattern = null;
 		if(generationIndex <= genLimit) {
 			System.out.println("Generation: " + generationIndex);
-			pattern = population.evolve(criticList, addBestFromLastRound);
+			pattern = population.evolve(criticList);
 			pattern.setInstrument(12);
 			//Instruments: 9:Glockenspiel; 12: Marimba, 96:Rain, 102 Synth "Echoes", 123 Bird Tweet, 127 Gun Shot, 108 Kalimba, 110 Fiddle
 			//116 Taiko Drum, 118 Synth Drum, 124 Telephone Ring

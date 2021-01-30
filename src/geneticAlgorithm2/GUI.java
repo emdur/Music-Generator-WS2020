@@ -8,6 +8,7 @@ import java.awt.Insets;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,7 +21,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-
 import org.jfugue.realtime.RealtimePlayer;
 import org.jfugue.temporal.TemporalPLP;
 
@@ -68,7 +68,17 @@ public class GUI {
 		}
 	}
 	private int bpm = 120;
-	private Boolean addBestFromLastRound = false;
+	private Boolean addBestFromLastRound = true;
+	public Boolean getAddBestFromLastRound() {
+		return addBestFromLastRound;
+	}
+
+	public void setAddBestFromLastRound(Boolean addBestFromLastRound) {
+		this.addBestFromLastRound = addBestFromLastRound;
+		if(sol != null) {
+			sol.getPopulation().setAddBestFromLastRound(addBestFromLastRound);
+		}
+	}
 	TemporalPLP plp;
 	JLabel fitnessLabel;
 	JLabel patternLabel;
@@ -173,47 +183,7 @@ public class GUI {
 		             }
 		        }  
 		    });
-		//These two buttons and the critics that belong to them are not included in the application
-		//because they work differently from the rest. Substitute By Step does not use evolution.
 		
-//		JToggleButton btnSub = new JToggleButton("Substitute by Step");
-//		btnSub.addActionListener(new ActionListener(){  
-//		    public void actionPerformed(ActionEvent e){  
-//		             if(((JToggleButton)e.getSource()).isSelected()) {
-//		            	 if(!cl.stream().anyMatch(c -> c instanceof SubstituteByStep)) {
-//		            		 cl.add(new SubstituteByStep());
-//		            		 JOptionPane.showMessageDialog(frame, "Substitute by step.\n Make sure this is the only enabled button.");
-//		            	 }
-//		             } else {
-//		            	 for(int i = 0; i < cl.size(); i++) {
-//		     				if(cl.get(i) instanceof SubstituteByStep) {
-//		     					cl.remove(i);
-//		     				}
-//		     			}
-//		             }
-//		        }  
-//		    });
-//		JToggleButton btnFindMelody = new JToggleButton("Find specific melody");
-//		btnFindMelody.addActionListener(new ActionListener(){  
-//		    @SuppressWarnings("unchecked")
-//			public void actionPerformed(ActionEvent e){  
-//		             if(((JToggleButton)e.getSource()).isSelected()) {
-//		            	 if(!cl.stream().anyMatch(c -> c instanceof FindMelody)) {
-//		            		 Individual mel = new Individual();
-//		            		 ArrayList<Note> no = new ArrayList<Note>(Arrays.asList(new Note[] {new Note(48), new Note("R"), new Note("R"), new Note(55),new Note("R"), new Note("R"), new Note(53), new Note(52)}));
-//		            		 mel.notes = (ArrayList<Note>) no.clone();
-//		            		 cl.add(new FindMelody(mel));
-//		            		 JOptionPane.showMessageDialog(frame, "This evolves towards a specified melody by calculating the fitness values accordingly.\n Make sure this is the only enabled button.");
-//		            	 }
-//		             } else {
-//		            	 for(int i = 0; i < cl.size(); i++) {
-//		     				if(cl.get(i) instanceof FindMelody) {
-//		     					cl.remove(i);
-//		     				}
-//		     			}
-//		             }
-//		        }  
-//		    });
 		JToggleButton btnCFriend = new JToggleButton("C-Friend");
 		JToggleButton btnReverseCFriend = new JToggleButton("Reverse-C-Friend");
 		btnCFriend.addActionListener(new ActionListener(){  
@@ -330,10 +300,13 @@ public class GUI {
 		JToggleButton btnLetBestMoveOn = new JToggleButton("Keep best pattern");
 		btnLetBestMoveOn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){  
-	             addBestFromLastRound = !addBestFromLastRound;
+				if(((JToggleButton)e.getSource()).isSelected()) {
+	            	 setAddBestFromLastRound(true);
+	             } else {
+	            	 setAddBestFromLastRound(false);
+	             }
 	        }
 		});
-		
 		JButton btnResetDurations = new JButton("Reset Durations");
 		btnResetDurations.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -378,7 +351,7 @@ public class GUI {
 		c.gridx = 4;
 		c.gridy = 0;
 		pane.add(btnLetBestMoveOn,c);
-		btnLetBestMoveOn.doClick();
+		btnLetBestMoveOn.setSelected(true);
 		c.gridx = 2;
 		c.gridy = 0;
 		pane.add(smallPane,c);
@@ -433,6 +406,7 @@ public class GUI {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pane.setVisible(true);
 		frame.setVisible(true);
+		
 	}
 	private void eval() {
 		scheduler = Executors.newScheduledThreadPool(1);
@@ -442,14 +416,15 @@ public class GUI {
 		       public void run() { evolHandle.cancel(true); }
 		     }, waitTime*(getGenerationNumber()-getGenIndex()+1), TimeUnit.MILLISECONDS);    
 	}
+	DecimalFormat df = new DecimalFormat("#.00"); 
 	private final Runnable evolution = new Runnable() {
 	       public void run() {
 	    	   if(getGenIndex() > getGenerationNumber()) {
 	    		   restartPlayer();
 	    		   scheduler.shutdownNow();
 	    	   } else {
-		    	   patternLabel.setText(getSol().evaluateOnce(getPlayer(), getGenIndex(), bpm, cl, addBestFromLastRound).toString());
-		    	   fitnessLabel.setText("Fitness: " + getSol().getPopulation().getMaxFitness());
+		    	   patternLabel.setText(getSol().evaluateOnce(getPlayer(), getGenIndex(), bpm, cl).toString());
+		    	   fitnessLabel.setText("Fitness: " + df.format(getSol().getPopulation().getMaxFitness()));
 		    	   setGenIndex(getGenIndex()+1);
 	    	   }
 	    	   
