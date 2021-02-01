@@ -3,8 +3,22 @@
 Music is generated based on a genetic algorithm.
 Genetic algorithms are based on natural selection.
 
-In this application, 20 random musical patterns are generated in the beginning. In each iteration, they evolve via "crossover" and "mutation", and what you hear from each of these generations is the pattern with the highest "fitness".
+In this application, 20 "individuals" are generated, each one has a random musical pattern that is made up of 8 notes.
+In each iteration that follows, the patterns evolve via "crossover" and "mutation", and what you hear from each of these generations is the pattern with the highest "fitness".
 The fitness is determined by criteria you (the user) can choose.
+
+### Phases of the evolution:
+1. A random population is generated.
+
+2. The fitness of each musical pattern (or rather of each individual) in the population is calculated.
+
+3. The fittest 2 individuals are chosen and a new population is created with their notes (this process is called "crossover").
+	The fittest pattern that is chosen is the one you will hear.
+
+4. The patterns of the individuals in the new population mutate (note height/ note duration changes) to introduce some diversity.
+
+5. The steps 2-5 repeat.
+
 
 The Open Source Java library JFugue was used for this project.
 
