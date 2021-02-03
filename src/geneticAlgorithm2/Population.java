@@ -73,20 +73,9 @@ public class Population {
 		//The selected Individuals parent1 and parent2 are then used for generating the new population.
 		//That is why the Selection comes before the Crossover/Mutation process.
 		//Because the new population is actually created at the end of the iteration BEFORE,
-		// the effect of the user clicking one of the critics is delayed by one generation.
+		// the effect of the user clicking one of the critics or on keepBestPattern is delayed by one generation.
 		
-		if(!getAddBestFromLastRound()) {
-			//The new population is generated via crossover & mutation at the end of each round.
-			// Thus, if addBestFromLastRound is set to false, the effect would take one round to late
-			// if the added ex-parent1 was not removed here. It needs to be replaced so the number
-			// of population members stays the same.
-			patterns.remove(patterns.size()-1);
-			Individual replacer = new Individual();
-			replacer.randomize();
-			patterns.add(replacer);
-		}
-		
-		//Selection
+		//SELECTION
 		
 		//The extra variable "save" is necessary because the "parent1" is used and changes before
 		//its value needs to be added to the next generation.
@@ -104,7 +93,9 @@ public class Population {
 		setMaxFitness(parent1.getFitness());
 		System.out.println("\n");
 		Pattern parent1pattern = parent1.translateToPattern();
+		
 		//CREATE THE NEXT POPULATION BY CROSSOVER & MUTATION
+		
 		//get the 2nd fittest
 		patterns.remove(parent1);
 		Individual parent2 = getFittest(criticList, patterns);
