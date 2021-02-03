@@ -50,6 +50,13 @@ If you ever feel like anything does not work, you can always choose one critic, 
 
 As soon as the number of generations that the population was initiated with has been reached, the music will stop. If you press "Play" now, a fresh population will be generated (the old one won't resume).
 
+If you change critics or toggle the "keep best pattern"-button, there is a delay of 1 generation until it takes effect (because the new population is always created at the end of each iteration).
+
+Here is a demo video of Muvolution:
+
+[![Alt text](https://img.youtube.com/vi/cW1aROwfVcs/0.jpg)](https://www.youtube.com/watch?v=VID)
+
+
 ***
 
 ## What the critics in "Muvolution" do:
