@@ -52,11 +52,6 @@ As soon as the number of generations that the population was initiated with has 
 
 If you change critics or toggle the "keep best pattern"-button, there is a delay of 1 generation until it takes effect (because the new population is always created at the end of each iteration).
 
-Here is a demo video of Muvolution:
-
-[![Alt text](https://img.youtube.com/vi/cW1aROwfVcs/0.jpg)](https://www.youtube.com/watch?v=VID)
-
-
 ***
 
 ## What the critics in "Muvolution" do:
